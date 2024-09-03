@@ -1,17 +1,16 @@
 #!/usr/bin/env python3
-"""
-Documentation
-
-See also https://www.python-boilerplate.com/flask
-"""
 import os
 import argparse
 import tkinter as tk
-from flask import Flask, jsonify
+from flask import Flask
 from flask_cors import CORS
 from logzero import logger
 from tkinter import filedialog
+from common.errors import InternalServerError
+from common.convert import convert_to, LibreOfficeError
+from subprocess import TimeoutExpired
 
+# IF YOU WANT TO RUN SCRIPT JUST ONCE, JUST REMOVE ALL FLASK STUFF, YOU CAN exec not this file but convert_one_file.py in maindir
 def create_app(config=None):
     app = Flask(__name__)
 
@@ -29,11 +28,6 @@ def create_app(config=None):
         logger.info("/")
         return "Hello World"
 
-    @app.route("/foo/<someId>")
-    def foo_url_arg(someId):
-        logger.info("/foo/%s", someId)
-        return jsonify({"echo": someId})
-
     return app
 
 def select_file_convert():
@@ -48,21 +42,29 @@ def select_file_convert():
 
     if file_path:
         print(f"Selected file: {file_path}")
+        try:
+            # Ask user for save location and filename for PDF
+            out_filename = filedialog.asksaveasfilename(
+                title='Enter name for a PDF file:',
+                defaultextension=".pdf",
+                filetypes=[("PDF Files", "*.pdf")]
+            )
+            if not out_filename:
+                print("Save cancelled.")
+                return None, None
+            
+             # Extract directory and filename from the chosen save path
+            output_dir = os.path.dirname(out_filename)
 
-        # Open directory selection dialog for output directory
-        output_dir = filedialog.askdirectory(
-            title="Select Output Directory:",
-            mustexist=True
-        )
+            result = convert_to(file_path, outdir=output_dir, timeout=15)
+            print(f"File successfully converted to: {result}")
 
-        if output_dir:
-            print(f"Selected output directory: {output_dir}")
-            # Prepare paths for further processing (conversion, etc.)
-            # At this point, you could call your conversion function
-            return file_path, output_dir
-        else:
-            print("No output directory selected. Exiting...")
-            return None, None
+        except LibreOfficeError:
+            raise InternalServerError({'message': 'Error during conversion'})
+        except TimeoutExpired:
+            raise InternalServerError({'message': 'Timeout during conversion'})
+        
+        return file_path, out_filename
     else:
         print("No file selected. Exiting...")
         return None, None
