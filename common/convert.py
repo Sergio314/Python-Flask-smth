@@ -4,8 +4,16 @@ import re
 import os
 
 
-def convert_to(src, outdir=None, timeout=None):
-    args = [libreoffice_exec(), '--headless', '--convert-to', 'pdf', src]
+supported_formats = ["docx", "pdf"]
+
+def convert_to(src, outdir=None, timeout=None, fileType=None):
+    if fileType not in supported_formats:
+        raise ValueError(f"Invalid output format: {fileType}. Choose one of {supported_formats}")
+    if fileType == "docx":
+        args = [libreoffice_exec(), '--headless', '--convert-to', fileType+":writer_pdf_Export", src]
+    else:
+        args = [libreoffice_exec(), '--headless', '--convert-to', fileType, src]
+
 
     process = subprocess.run(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=timeout)
     match = re.search('-> (.*?) using filter', process.stdout.decode())
