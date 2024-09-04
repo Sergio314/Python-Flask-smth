@@ -34,7 +34,7 @@ def select_file_convert(fileTypeTo):
             output_dir = os.path.dirname(out_filename)
 
             # Perform the conversion and save the file to the selected location
-            result = convert_to(file_path, outdir=output_dir, timeout=15, fileType=fileTypeTo)
+            result = convert_to(file_path, outdir=output_dir, timeout=15, fileType=fileTypeTo, out_filename=out_filename)
             print(f"File successfully converted to: {result}")
 
         except LibreOfficeError:

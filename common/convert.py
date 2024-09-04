@@ -6,8 +6,8 @@ import os
 
 supported_formats = ["docx", "pdf"]
 
-def convert_to(src, outdir=None, timeout=None, fileType=None):
-    if fileType not in supported_formats:
+def convert_to(src, outdir=None, timeout=None, fileType=None, out_filename=None):
+    if fileType not in supported_formats: 
         raise ValueError(f"Invalid output format: {fileType}. Choose one of {supported_formats}")
     if fileType == "docx":
         args = [libreoffice_exec(), '--headless', '--convert-to', fileType+":writer_pdf_Export", src]
@@ -17,14 +17,13 @@ def convert_to(src, outdir=None, timeout=None, fileType=None):
 
     process = subprocess.run(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=timeout)
     match = re.search('-> (.*?) using filter', process.stdout.decode())
-
     if match is None:
         raise LibreOfficeError(process.stdout.decode())
     generated_pdf = match.group(1)
     
     if outdir:
         # Move the generated PDF to the specified output directory
-        output_path = os.path.join(outdir, os.path.basename(generated_pdf))
+        output_path = os.path.join(outdir, os.path.basename(out_filename))
         os.rename(generated_pdf, output_path)
         return output_path
     else:

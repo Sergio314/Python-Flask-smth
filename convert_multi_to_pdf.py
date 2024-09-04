@@ -56,7 +56,7 @@ def select_file_convert(fileTypeTo):
              # Extract directory and filename from the chosen save path
             output_dir = os.path.dirname(out_filename)
 
-            result = convert_to(file_path, outdir=output_dir, timeout=15, fileType=fileTypeTo)
+            result = convert_to(file_path, outdir=output_dir, timeout=15, fileType=fileTypeTo, out_filename=out_filename)
             print(f"File successfully converted to: {result}")
 
         except LibreOfficeError:
