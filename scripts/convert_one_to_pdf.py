@@ -6,14 +6,14 @@ from common.convert import convert_to, LibreOfficeError
 from subprocess import TimeoutExpired
 import os
 
-def select_file_convert(fileTypeTo):
+def convert_one_to_pdf(fileTypeTo):
     root = tk.Tk()
     root.withdraw()
 
-    # Open file input dialog to select PDF file
+    # Open file input dialog to select DOCX file
     file_path = filedialog.askopenfilename(
-        title='Select file to convert:',
-        filetypes=[("PDF Files", "*.pdf")]
+        title='Select 1 file to convert to PDF:',
+        filetypes=[("DOCX Files", "*.docx")]
     )
 
     if file_path:
@@ -21,9 +21,9 @@ def select_file_convert(fileTypeTo):
         try:
             # Ask user for save location and filename for PDF
             out_filename = filedialog.asksaveasfilename(
-                title='Enter name for the DOCX file:',
-                defaultextension=".docx",
-                filetypes=[("DOCX Files", "*.docx")]
+                title='Enter name for the PDF file:',
+                defaultextension=".pdf",
+                filetypes=[("PDF Files", "*.pdf")]
             )
 
             if not out_filename:
@@ -41,11 +41,12 @@ def select_file_convert(fileTypeTo):
             raise InternalServerError({'message': 'Error during conversion'})
         except TimeoutExpired:
             raise InternalServerError({'message': 'Timeout during conversion'})
+        pass
 
     else:
         print("No file selected. Exiting...")
 
 if __name__ == "__main__":
     # Run the file selection and conversion process
-    select_file_convert("docx")
+    select_file_convert("pdf")
     # The script will automatically exit after the conversion is done

@@ -30,14 +30,14 @@ def create_app(config=None):
 
     return app
 
-def select_file_convert(fileTypeTo):
+def convert_multi_to_pdf(fileTypeTo):
     root = tk.Tk()
     root.withdraw()
 
     # Open file input dialog to select DOCX file
     file_path = filedialog.askopenfilename(
-        title='Select file to convert:',
-        filetypes=[("PDF Files", "*.pdf")]
+        title='Select multiple files to convert to PDF:',
+        filetypes=[("DOCX Files", "*.docx")]
     )
 
     if file_path:
@@ -45,9 +45,9 @@ def select_file_convert(fileTypeTo):
         try:
             # Ask user for save location and filename for PDF
             out_filename = filedialog.asksaveasfilename(
-                title='Enter name for the DOCX file:',
-                defaultextension=".docx",
-                filetypes=[("DOCX Files", "*.docx")]
+                title='Enter name for a PDF file:',
+                defaultextension=".pdf",
+                filetypes=[("PDF Files", "*.pdf")]
             )
             if not out_filename:
                 print("Save cancelled.")
@@ -77,7 +77,7 @@ if __name__ == "__main__":
     port = int(args.port)
 
     # First, select file and output directory
-    file_path, output_dir = select_file_convert("docx")
+    file_path, output_dir = select_file_convert("pdf")
 
     if file_path and output_dir:
         # Continue with Flask application if selection was successful
